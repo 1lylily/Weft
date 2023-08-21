@@ -33,7 +33,7 @@ public open class Thread(target: String? = null) {
     /**
      * Finds the target and modifications.
      */
-    init {
+    init { //todo readability idk
         this.target = target
             ?: (this::class.findAnnotation<ThreadTarget>()?.target
             ?: throw NullPointerException("No targets found for Thread."))
