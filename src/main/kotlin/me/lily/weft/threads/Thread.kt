@@ -28,7 +28,7 @@ public open class Thread(target: String? = null) {
     /**
      * A list of this Thread's injections.
      */
-    internal val modifications: MutableMap<String, InsnModification> = HashMap()
+    internal val modifications: MutableMap<String, MutableList<InsnModification>> = HashMap()
 
     /**
      * Finds the target and modifications.
@@ -44,8 +44,14 @@ public open class Thread(target: String? = null) {
         }.forEach {
             val annotation: Injection = it.findAnnotation<Injection>()
                 ?: throw RuntimeException("Annotation both exists and doesn't exist.")
-            modifications["${(this::class.qualifiedName ?: throw IllegalArgumentException("Threads cannot be anonymous classes."))
-                .replace(".", "/")}|${it.name}|${Utils.getDescriptor(it)}"] = Supplier<InsnModification> {
+            val identifier = "${(this::class.qualifiedName 
+                ?: throw IllegalArgumentException("Threads cannot be anonymous classes."))
+                .replace(".", "/")}|${it.name}|${Utils.getDescriptor(it)}"
+            (modifications[identifier] ?: Supplier<MutableList<InsnModification>> {
+                val list: MutableList<InsnModification> = ArrayList()
+                modifications[identifier] = list
+                return@Supplier list
+            }.get()).add(Supplier<InsnModification> {
                     when (annotation.type) {
                         Type.HEAD -> {
                             Type.HEAD.builder(arrayOf("${this.target}|${if (annotation.target.contains("(")) { annotation.target
@@ -55,7 +61,7 @@ public open class Thread(target: String? = null) {
                         }
                         else -> throw IllegalArgumentException("Unhandled injection type.")
                     }
-            }.get()
+            }.get())
         }
     }
 

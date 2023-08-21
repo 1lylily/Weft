@@ -3,7 +3,6 @@ package me.lily.weft
 import org.objectweb.asm.Opcodes
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 

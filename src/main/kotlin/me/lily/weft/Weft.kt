@@ -1,6 +1,7 @@
 package me.lily.weft
 
 import me.lily.weft.loom.LoomManager
+import me.lily.weft.modifications.InsnModification
 import me.lily.weft.threads.Thread
 import org.objectweb.asm.tree.ClassNode
 import java.util.function.Supplier
@@ -12,6 +13,9 @@ import java.util.function.Supplier
  * When creating an instance, pass instances of your threads as parameters.
  *
  * Note: The developer of this library is an idiot, and wanted to keep the theme of the library name, threads, unless stated otherwise, refer to [Thread], not Java threads.
+ *
+ * @param threads The threads to inject.
+ * @param loom The loom for this Weft instance.
  */
 public class Weft(vararg threads: Thread, loom: String = "DefaultLoom") {
 
@@ -38,14 +42,20 @@ public class Weft(vararg threads: Thread, loom: String = "DefaultLoom") {
     }
 
     /**
-     * Called
+     * Should be called whenever a class is transformed.
      *
      * @param classNode The ClassNode of the current transformation.
      */
     public fun transform(classNode: ClassNode) {
         threadMap[classNode.name]?.forEach {
-            it
+            it.transform(classNode)
         }
     }
 
+}
+
+private fun Thread.transform(classNode: ClassNode) {
+    val methodMap: MutableMap<String, MutableList<InsnModification>> = HashMap()
+
+    this.modifications //todo finish this, my brain stopped working before i could do it
 }
