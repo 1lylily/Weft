@@ -1,0 +1,11 @@
+[versions]
+asm = "9.5"      # https://asm.ow2.io/versions.html
+
+[libraries]
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+asmtree = { module = "org.ow2.asm:asm-tree", version.ref = "asm" }
+asmutil = { module = "org.ow2.asm:asm-util", version.ref = "asm" }
+asmcommons = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
+
+[bundles]
+asm = ["asm", "asmtree", "asmutil", "asmcommons"]
