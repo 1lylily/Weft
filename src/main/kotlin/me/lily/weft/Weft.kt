@@ -1,5 +1,6 @@
 package me.lily.weft
 
+import me.lily.weft.loom.LoomManager
 import me.lily.weft.threads.Thread
 import org.objectweb.asm.tree.ClassNode
 import java.util.function.Supplier
@@ -32,6 +33,8 @@ public class Weft(vararg threads: Thread, loom: String = "DefaultLoom") {
                 list
             }.get()).add(it)
         }
+
+        LoomManager.registerLoom(loom, this, threadMap)
     }
 
     /**

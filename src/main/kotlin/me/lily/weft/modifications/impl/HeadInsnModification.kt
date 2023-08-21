@@ -20,6 +20,9 @@ internal class HeadInsnModification(target: String) : AbstractInsnModification(t
     //todo params to stack
     //todo dont use newList idfk
     override fun inject(list: InsnList, static: Boolean, paramProvider: ParamProvider, identifier: String) {
+        // identifiers for threads are `qualifiedName`
+        // identifier param here is `qualifiedName|funcName|desc` as it's an InsnModification identifier
+
         val insns = InsnList()
 
         insns.add(TypeInsnNode(NEW, "me/lily/weft/InjectionCallback"))
@@ -35,7 +38,7 @@ internal class HeadInsnModification(target: String) : AbstractInsnModification(t
 
         insns.add(InsnNode(DUP))
 
-        insns.add(LdcInsnNode(identifier))
+        insns.add(LdcInsnNode(identifier.split("|")[0]))
 
         insns.add(MethodInsnNode(INVOKESTATIC, "me/lily/weft/loom/LoomManager", "getThread", "(Ljava/lang/String;)Lme/lily/weft/threads/Thread;"))
 
