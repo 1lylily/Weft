@@ -1,5 +1,6 @@
 package me.lily.weft
 
+import me.lily.weft.modifications.Injection
 import org.objectweb.asm.Opcodes
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -53,5 +54,13 @@ internal object Utils {
         sb.append(")").append(getDescriptor(func.returnType))
         return sb.toString()
     }
+
+    fun getIdentifier(func: KFunction<*>): String = "${(this::class.qualifiedName
+        ?: throw IllegalArgumentException("Threads cannot be anonymous classes."))
+        .replace(".", "/")}|${func.name}|${getDescriptor(func)}"
+
+    fun getIdentifier(target: String, annotation: Injection): String = "${target}|${if (annotation.target.contains("(")) { 
+        annotation.target.replace("(", "$(").split("$")[0]} else annotation.target}|${if (annotation.target
+            .contains("(")) { annotation.target.replace("(", "$(").split("$")[1]} else "NULL"}"
 
 }

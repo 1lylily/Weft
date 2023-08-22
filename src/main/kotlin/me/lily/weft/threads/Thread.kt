@@ -33,7 +33,7 @@ public open class Thread(target: String? = null) {
     /**
      * Finds the target and modifications.
      */
-    init { //todo readability idk
+    init {
         this.target = target
             ?: (this::class.findAnnotation<ThreadTarget>()?.target
             ?: throw NullPointerException("No targets found for Thread."))
@@ -44,24 +44,18 @@ public open class Thread(target: String? = null) {
         }.forEach {
             val annotation: Injection = it.findAnnotation<Injection>()
                 ?: throw RuntimeException("Annotation both exists and doesn't exist.")
-            val identifier = "${(this::class.qualifiedName 
-                ?: throw IllegalArgumentException("Threads cannot be anonymous classes."))
-                .replace(".", "/")}|${it.name}|${Utils.getDescriptor(it)}"
-            (modifications[identifier] ?: Supplier<MutableList<InsnModification>> {
+            val identifier = Utils.getIdentifier(it)
+            (modifications[identifier] ?: run {
                 val list: MutableList<InsnModification> = ArrayList()
                 modifications[identifier] = list
-                return@Supplier list
-            }.get()).add(Supplier<InsnModification> {
+                list
+            }).add(run {
                     when (annotation.type) {
                         Type.HEAD -> {
-                            Type.HEAD.builder(arrayOf("${this.target}|${if (annotation.target.contains("(")) { annotation.target
-                                .replace("(", "$(").split("$")[0]} else annotation.target}|${if (annotation.target
-                                    .contains("(")) { annotation.target.replace("(", "$(").split("$")[1]} 
-                            else "NULL"}"))
+                            Type.HEAD.builder(arrayOf(Utils.getIdentifier(this.target, annotation)))
                         }
-                        else -> throw IllegalArgumentException("Unhandled injection type.")
                     }
-            }.get())
+            })
         }
     }
 
